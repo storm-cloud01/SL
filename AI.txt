@@ -1,0 +1,590 @@
+#Practical no 1 (BFS)
+visited = []  # List for visited nodes
+queue = []    # Initialize a queue
+
+# Function for BFS
+def bfs(visited, graph, node):
+    visited.append(node)
+    queue.append(node)
+
+    while queue:  # Loop to visit each node
+        m = queue.pop(0)
+        print(m, end=" ")
+
+        for neighbour in graph[m]:
+            if neighbour not in visited:
+                visited.append(neighbour)
+                queue.append(neighbour)
+
+# Driver code
+def main():
+    graph = {}
+    num_vertices = int(input("Enter the number of vertices: "))
+    
+    # Taking input for each vertex and its neighbors
+    for _ in range(num_vertices):
+        vertex = input("Enter vertex: ")
+        neighbors = input(f"Enter neighbors of {vertex} separated by space: ").split()
+        graph[vertex] = neighbors
+
+    # Starting node for BFS
+    start_node = input("Enter the starting node for BFS: ")
+
+    print("\nFollowing is the Breadth-First Search (BFS): ")
+    bfs(visited, graph, start_node)
+
+# Call main function
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+
+
+
+#Practical no. 1 (DFS)
+
+# Function for DFS
+def dfs(visited, graph, node): 
+    if node not in visited:
+        print(node, end=" ")  # Print the node
+        visited.append(node)  # Mark the node as visited
+        for neighbour in graph[node]:
+            dfs(visited, graph, neighbour)  # Recur for all unvisited neighbors
+
+# Input graph from user
+def input_graph():
+    graph = {}
+    n = int(input("Enter the number of nodes: "))
+    
+    for _ in range(n):
+        node = input("Enter node: ")
+        neighbours = input(f"Enter neighbours of {node} (comma separated, leave empty if none): ").split(',')
+        neighbours = [neighbour.strip() for neighbour in neighbours if neighbour.strip()]
+        graph[node] = neighbours
+    
+    return graph
+
+# Driver code
+print("Enter your graph:")
+graph = input_graph()
+
+visited = []  # List for visited nodes
+start_node = input("Enter the starting node for DFS: ")
+
+print("Following is the Depth-First Search (DFS) traversal:")
+dfs(visited, graph, start_node)
+
+
+
+#Practical no 2 (A*)
+
+def aStarAlgo(start_node, stop_node):
+    open_set = set([start_node])
+    closed_set = set()
+    g = {}               # Store distance from starting node
+    parents = {}         # Parents contain an adjacency map of all nodes
+
+    # Distance of starting node from itself is zero
+    g[start_node] = 0
+    # Start node is root node, i.e., it has no parent node
+    parents[start_node] = start_node
+
+    while len(open_set) > 0:
+        n = None
+        # Node with lowest f() is found
+        for v in open_set:
+            if n == None or g[v] + heuristic(v) < g[n] + heuristic(n):
+                n = v
+
+        if n == stop_node or Graph_nodes[n] == None:
+            pass
+        else:
+            for (m, weight) in get_neighbors(n):
+                # Nodes 'm' not in open_set and closed_set are added to open_set
+                # n is set as the parent of m
+                if m not in open_set and m not in closed_set:
+                    open_set.add(m)
+                    parents[m] = n
+                    g[m] = g[n] + weight
+                else:
+                    if g[m] > g[n] + weight:
+                        # Update g(m)
+                        g[m] = g[n] + weight
+                        parents[m] = n
+                        # If m is in closed_set, remove and add to open_set
+                        if m in closed_set:
+                            closed_set.remove(m)
+                            open_set.add(m)
+
+        if n == None:
+            print('Path does not exist!')
+            return None
+
+        # If the current node is the stop_node, reconstruct the path from it to the start_node
+        if n == stop_node:
+            path = []
+            while parents[n] != n:
+                path.append(n)
+                n = parents[n]
+            path.append(start_node)
+            path.reverse()
+            print('Path found: {}'.format(path))
+            return path
+
+        # Remove n from the open_list, and add it to closed_list
+        # because all of its neighbors were inspected
+        open_set.remove(n)
+        closed_set.add(n)
+
+    print('Path does not exist!')
+    return None
+
+# Function to return neighbors and their distances from the passed node
+def get_neighbors(v):
+    if v in Graph_nodes:
+        return Graph_nodes[v]
+    else:
+        return None
+
+# Function to get heuristic distances from each node
+def heuristic(n):
+    H_dist = {
+        'A': 11,
+        'B': 6,
+        'C': 5,
+        'D': 7,
+        'E': 3,
+        'F': 6,
+        'G': 5,
+        'H': 3,
+        'I': 1,
+        'J': 0
+    }
+    return H_dist[n]
+
+# Input the graph from the user
+def input_graph():
+    graph = {}
+    while True:
+        node = input("Enter a node (or type 'done' to finish): ")
+        if node.lower() == 'done':
+            break
+        neighbors_str = input(f"Enter neighbors of {node} and their weights (e.g., B,6 D,3): ")
+        neighbors = []
+        if neighbors_str.strip():
+            for neighbor in neighbors_str.split():
+                node_info = neighbor.split(',')
+                neighbors.append((node_info[0].strip(), int(node_info[1].strip())))
+        graph[node] = neighbors
+    
+    return graph
+
+# Driver code to take user inputs and run A* algorithm
+print("Enter your graph:")
+Graph_nodes = input_graph()
+
+start_node = input("Enter the start node: ")
+stop_node = input("Enter the stop node: ")
+
+aStarAlgo(start_node, stop_node)
+
+
+
+
+
+
+
+
+
+#Practucal no. 3 (tic-tac-toe)
+
+from random import choice
+from math import inf
+
+# Initial empty board
+board = [[0, 0, 0],
+         [0, 0, 0],
+         [0, 0, 0]]
+
+# Function to display the game board
+def Gameboard(board):
+    chars = {1: 'X', -1: 'O', 0: ' '}
+    for x in board:
+        for y in x:
+            ch = chars[y]
+            print(f'| {ch} |', end='')
+        print('\n' + '---------------')
+    print('===============')
+
+# Function to reset the board to an empty state
+def Clearboard(board):
+    for x, row in enumerate(board):
+        for y, col in enumerate(row):
+            board[x][y] = 0
+
+# Function to check if a player has won
+def winningPlayer(board, player):
+    conditions = [[board[0][0], board[0][1], board[0][2]],
+                  [board[1][0], board[1][1], board[1][2]],
+                  [board[2][0], board[2][1], board[2][2]],
+                  [board[0][0], board[1][0], board[2][0]],
+                  [board[0][1], board[1][1], board[2][1]],
+                  [board[0][2], board[1][2], board[2][2]],
+                  [board[0][0], board[1][1], board[2][2]],
+                  [board[0][2], board[1][1], board[2][0]]]
+    if [player, player, player] in conditions:
+        return True
+    return False
+
+# Check if the game is won
+def gameWon(board):
+    return winningPlayer(board, 1) or winningPlayer(board, -1)
+
+# Print the result of the game
+def printResult(board):
+    if winningPlayer(board, 1):
+        print('X has won! \n')
+    elif winningPlayer(board, -1):
+        print('O\'s have won! \n')
+    else:
+        print('Draw\n')
+
+# Get available blank spots on the board
+def blanks(board):
+    blank = []
+    for x, row in enumerate(board):
+        for y, col in enumerate(row):
+            if board[x][y] == 0:
+                blank.append([x, y])
+    return blank
+
+# Check if the board is full
+def boardFull(board):
+    return len(blanks(board)) == 0
+
+# Set a move on the board
+def setMove(board, x, y, player):
+    board[x][y] = player
+
+# Handle the player's move
+def playerMove(board):
+    e = True
+    moves = {1: [0, 0], 2: [0, 1], 3: [0, 2],
+             4: [1, 0], 5: [1, 1], 6: [1, 2],
+             7: [2, 0], 8: [2, 1], 9: [2, 2]}
+    while e:
+        try:
+            move = int(input('Enter a number between 1-9: '))
+            if move < 1 or move > 9:
+                print('Invalid Move! Try again!')
+            elif not (moves[move] in blanks(board)):
+                print('Invalid Move! Try again!')
+            else:
+                setMove(board, moves[move][0], moves[move][1], 1)
+                Gameboard(board)
+                e = False
+        except(KeyError, ValueError):
+            print('Enter a valid number!')
+
+# Evaluate the score for the current board state
+def getScore(board):
+    if winningPlayer(board, 1):
+        return 10
+    elif winningPlayer(board, -1):
+        return -10
+    else:
+        return 0
+
+# Alpha-Beta Minimax algorithm
+def abminimax(board, depth, alpha, beta, player):
+    row = -1
+    col = -1
+    if depth == 0 or gameWon(board):
+        return [row, col, getScore(board)]
+    else:
+        for cell in blanks(board):
+            setMove(board, cell[0], cell[1], player)
+            score = abminimax(board, depth - 1, alpha, beta, -player)
+            if player == 1:
+                # X is always the max player
+                if score[2] > alpha:
+                    alpha = score[2]
+                    row = cell[0]
+                    col = cell[1]
+            else:
+                if score[2] < beta:
+                    beta = score[2]
+                    row = cell[0]
+                    col = cell[1]
+            setMove(board, cell[0], cell[1], 0)
+            if alpha >= beta:
+                break
+        if player == 1:
+            return [row, col, alpha]
+        else:
+            return [row, col, beta]
+
+# Computer's move for player O
+def o_comp(board):
+    if len(blanks(board)) == 9:
+        x = choice([0, 1, 2])
+        y = choice([0, 1, 2])
+        setMove(board, x, y, -1)
+        Gameboard(board)
+    else:
+        result = abminimax(board, len(blanks(board)), -inf, inf, -1)
+        setMove(board, result[0], result[1], -1)
+        Gameboard(board)
+
+# Computer's move for player X
+def x_comp(board):
+    if len(blanks(board)) == 9:
+        x = choice([0, 1, 2])
+        y = choice([0, 1, 2])
+        setMove(board, x, y, 1)
+        Gameboard(board)
+    else:
+        result = abminimax(board, len(blanks(board)), -inf, inf, 1)
+        setMove(board, result[0], result[1], 1)
+        Gameboard(board)
+
+# Make a move based on the mode and player
+def makeMove(board, player, mode):
+    if mode == 1:
+        if player == 1:
+            playerMove(board)
+        else:
+            o_comp(board)
+    else:
+        if player == 1:
+            o_comp(board)
+        else:
+            x_comp(board)
+
+# Play the Player vs Computer game
+def pvc():
+    while True:
+        try:
+            order = int(input('Enter to play 1st or 2nd: '))
+            if not (order == 1 or order == 2):
+                print('Please pick 1 or 2')
+            else:
+                break
+        except(KeyError, ValueError):
+            print('Enter a number')
+    
+    Clearboard(board)
+    if order == 2:
+        currentPlayer = -1
+    else:
+        currentPlayer = 1
+
+    while not (boardFull(board) or gameWon(board)):
+        makeMove(board, currentPlayer, 1)
+        currentPlayer *= -1
+    
+    printResult(board)
+
+# Driver code
+print("=================================================")
+print("TIC-TAC-TOE using MINIMAX with ALPHA-BETA Pruning")
+print("=================================================")
+pvc()
+
+
+
+
+
+#Practical no. 4 (n-queen)
+
+
+
+# Function to check if placing a queen is safe
+def is_safe(board, row, col, N):
+    # Check if there's another queen in the same column
+    for i in range(row):
+        if board[i][col] == 1:
+            return False
+
+    # Check the upper left diagonal (moving upwards)
+    i, j = row, col
+    while i >= 0 and j >= 0:
+        if board[i][j] == 1:
+            return False
+        i -= 1
+        j -= 1
+
+    # Check the upper right diagonal (moving upwards)
+    i, j = row, col
+    while i >= 0 and j < N:
+        if board[i][j] == 1:
+            return False
+        i -= 1
+        j += 1
+
+    return True  # If no queens are attacking, it's safe
+
+# Function to solve the N-Queens problem
+def solve_nqueens(board, row, N):
+    # If all queens are placed (reached the end), we're done
+    if row >= N:
+        return True
+
+    # Try placing a queen in each column of the current row
+    for col in range(N):
+        if is_safe(board, row, col, N):
+            # Place the queen
+            board[row][col] = 1
+
+            # Recur to place the rest of the queens
+            if solve_nqueens(board, row + 1, N):
+                return True
+
+            # If placing the queen doesn't lead to a solution, backtrack (remove the queen)
+            board[row][col] = 0
+
+    return False  # If no place is safe in this row, return False
+
+# Function to print the board with queens
+def print_solution(board, N):
+    for row in board:
+        print(" ".join("Q" if col == 1 else "." for col in row))
+
+# Function to start solving the N-Queens problem
+def nqueens(N):
+    # Create an empty N x N chessboard (all zeros)
+    board = [[0] * N for _ in range(N)]
+
+    # Try to solve the problem, starting from the first row
+    if solve_nqueens(board, 0, N):
+        print_solution(board, N)  # Print the solution if it exists
+    else:
+        print("No solution exists")  # Print if no solution is found
+
+# Ask the user for input (the size of the board)
+N = int(input("Enter the value of N: "))
+nqueens(N)
+
+
+
+
+
+
+
+
+
+#Practical no. 5 (MST)
+
+import heapq
+
+class Graph:
+    def __init__(self, vertices):  # Use double underscores for __init__
+        self.V = vertices  # Number of vertices
+        self.graph = {}    # Dictionary to store the graph
+
+    def add_edge(self, u, v, weight):
+        if u not in self.graph:
+            self.graph[u] = []
+        if v not in self.graph:
+            self.graph[v] = []
+        self.graph[u].append((v, weight))
+        self.graph[v].append((u, weight))  # Undirected graph
+
+    def prim_mst(self):
+        # Initialize a priority queue
+        min_heap = []
+        # To track vertices included in the MST
+        in_mst = [False] * self.V
+        
+        # Check if there are edges from the starting vertex
+        if 0 not in self.graph:
+            print("Vertex 0 has no edges. Please ensure valid input.")
+            return [], 0
+        
+        # Start with the first vertex (0)
+        in_mst[0] = True
+        # Push all edges from the first vertex into the min_heap
+        for v, weight in self.graph[0]:
+            heapq.heappush(min_heap, (weight, 0, v))  # (weight, from_vertex, to_vertex)
+
+        mst_weight = 0
+        mst_edges = []
+
+        while min_heap:
+            weight, u, v = heapq.heappop(min_heap)
+
+            if in_mst[v]:
+                continue  # Skip if the vertex is already in the MST
+
+            # Include this edge in the MST
+            in_mst[v] = True
+            mst_weight += weight
+            mst_edges.append((u, v, weight))
+
+            # Push all edges from the newly added vertex into the min_heap
+            for next_v, next_weight in self.graph[v]:
+                if not in_mst[next_v]:
+                    heapq.heappush(min_heap, (next_weight, v, next_v))
+
+        return mst_edges, mst_weight
+
+def main():
+    # Input number of vertices
+    num_vertices = int(input("Enter the number of vertices: "))
+    g = Graph(num_vertices)
+
+    # Input edges
+    num_edges = int(input("Enter the number of edges: "))
+    for _ in range(num_edges):
+        u, v, weight = map(int, input("Enter edge (u, v, weight): ").split())
+        g.add_edge(u, v, weight)
+
+    # Compute MST
+    mst_edges, total_weight = g.prim_mst()
+
+    if mst_edges:
+        print("\nEdges in the Minimum Spanning Tree:")
+        for u, v, weight in mst_edges:
+            print(f"{u} -- {v} (weight: {weight})")
+        print("Total weight of MST:", total_weight)
+    else:
+        print("No MST found due to invalid input.")
+
+if __name__ == "__main__":  # Use double underscores for __name__ and __main__
+    main()
+
+
+
+
+
+
+
+
+
+
+
+#Practical no. 5 (Sorting)
+
+def selection_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        min_index = i
+        for j in range(i+1, n):
+            if arr[j] < arr[min_index]:
+                min_index = j
+        arr[i], arr[min_index] = arr[min_index], arr[i]
+
+# Take input from the user
+arr = list(map(int, input("Enter the elements of the array separated by spaces: ").split()))
+
+print("Original array:", arr)
+
+selection_sort(arr)
+
+print("Sorted array:", arr)
